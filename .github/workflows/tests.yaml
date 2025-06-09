@@ -1,0 +1,66 @@
+name: "Testes Unitários do Trabalho Final CI"
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  checks: write
+  contents: read
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: 📥 Fazendo checkout do projeto para o runner
+        uses: actions/checkout@v4
+
+      - name: 🟢 Instalando Node.js v22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 📦 Instalando Yarn
+        run: npm install -g yarn
+
+      - name: ⚡ Instalando Dependências
+        run: yarn
+
+      - name: 🧪 Executando Testes Unitários
+        run: |
+          mkdir -p test-results
+          yarn unit-tests --reporter xunit --reporter-options output=test-results/results.xml
+
+      - name: ✅ Resumo dos Testes
+        if: success()
+        run: |
+          echo "## 🎉 Testes Executados com Sucesso! ✅" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Status dos Testes:" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ **Status**: Todos os testes passaram!" >> $GITHUB_STEP_SUMMARY
+          echo "- 🧪 **Framework**: Mocha" >> $GITHUB_STEP_SUMMARY
+          echo "- 🟢 **Node.js**: v22" >> $GITHUB_STEP_SUMMARY
+          echo "- 📦 **Gerenciador**: Yarn" >> $GITHUB_STEP_SUMMARY
+
+      - name: ❌ Resumo dos Testes (Falha)
+        if: failure()
+        run: |
+          echo "## 🚨 Alguns Testes Falharam! ❌" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Status dos Testes:" >> $GITHUB_STEP_SUMMARY
+          echo "- ❌ **Status**: Testes com falha!" >> $GITHUB_STEP_SUMMARY
+          echo "- 🧪 **Framework**: Mocha" >> $GITHUB_STEP_SUMMARY
+          echo "- 🟢 **Node.js**: v22" >> $GITHUB_STEP_SUMMARY
+          echo "- 📦 **Gerenciador**: Yarn" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🔍 **Verifique os logs acima para mais detalhes.**"
+
+      - name: 📊 Publicando Relatório JUnit de Execução dos Testes
+        uses: dorny/test-reporter@v1
+        if: ${{ !cancelled() }}
+        with:
+          name: 📋 Unit Tests Results
+          path: test-results/results.xml
+          reporter: java-junit
+          token: ${{ secrets.GITHUB_TOKEN }}

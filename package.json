@@ -1,0 +1,16 @@
+{
+  "name": "trabalho-final-ci-pgats",
+  "version": "1.0.0",
+  "description": "<p align=\"center\">\r   <h1 align=\"center\">📘 Trabalho Final CI PGATS</h1>\r </p>",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "unit-tests": "yarn mocha ./trabalho-final/testes/trabalho-final.js"
+  },
+  "repository": "https://github.com/henriquecervi/trabalho-final-ci-pgats.git",
+  "author": "Henrique Cervi Cutri <hcervicutri@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "mocha": "^11.2.2"
+  }
+}
